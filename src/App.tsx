@@ -11,9 +11,19 @@ function App() {
   const scale = React.useRef<number>(1);
   const pointX = React.useRef<number>(0);
   const pointY = React.useRef<number>(0);
+  const maxWidth = React.useRef<number>(750);
+  const maxHeight = React.useRef<number>(750);
+  const maxX = React.useRef<number>(0);
+  const maxY = React.useRef<number>(0);
 
   const setTransform = () => {
     if (refZoom && refZoom.current) {
+      if (pointX.current > 0) pointX.current = 0;
+      if (pointY.current > 0) pointY.current = 0;
+
+      if (pointX.current <= maxX.current) pointX.current = maxX.current;
+      if (pointY.current <= maxY.current) pointY.current = maxY.current;
+
       refZoom.current.style.transform =
         "translate(" +
         pointX.current +
@@ -48,6 +58,36 @@ function App() {
         }
         pointX.current = e.clientX - start.current.x;
         pointY.current = e.clientY - start.current.y;
+        setTransform();
+      };
+
+      refZoom.current.onwheel = (e) => {
+        e.preventDefault();
+        var xs = (e.clientX - pointX.current) / scale.current,
+          ys = (e.clientY - pointY.current) / scale.current,
+          delta = -e.deltaY;
+
+        let nextScale = 0;
+        if (delta > 0) {
+          nextScale = scale.current * 1.2;
+        } else {
+          nextScale = scale.current / 1.2;
+        }
+        if (nextScale < 1) {
+          scale.current = 1;
+        } else {
+          if (nextScale > 3) {
+            scale.current = 3;
+          } else {
+            scale.current = nextScale;
+          }
+        }
+
+        maxX.current = maxWidth.current - maxWidth.current * scale.current;
+        maxY.current = maxHeight.current - maxHeight.current * scale.current;
+        pointX.current = e.clientX - xs * scale.current;
+        pointY.current = e.clientY - ys * scale.current;
+
         setTransform();
       };
     }
