@@ -1,7 +1,72 @@
 import React from "react";
 import "./App.css";
 
+function generateDivCoord(item: any) {
+  const { x, y } = item;
+  let _x = 0,
+    _y = 0;
+  // 1사분면
+  if (x > 0 && y > 0) {
+    // + +
+    // left : + , top : -
+    _x = x;
+    _y = y * -1;
+  }
+  // 2사분면
+  else if (x < 0 && y > 0) {
+    // - +
+    // left : -, top : -
+    _x = x;
+    _y = y * -1;
+  }
+  // 3사분면
+  else if (x < 0 && y < 0) {
+    // - -
+    // left: -, top : +
+    _x = x;
+    _y = y * -1;
+  }
+  // 4사분면
+  else if (x > 0 && y < 0) {
+    // + -
+    // left: +, top: +
+    _x = x;
+    _y = y * -1;
+  }
+
+  return {
+    top: _y,
+    left: _x,
+  };
+}
+
 function App() {
+  const items = [
+    {
+      name: "1 square",
+      // 1사분면
+      x: 50,
+      y: 50,
+    },
+    {
+      name: "4 square",
+      // 제 4사분면
+      x: 50,
+      y: -50,
+    },
+    {
+      name: "2 square",
+      // 제 2사분면
+      x: -50,
+      y: 50,
+    },
+    {
+      name: "3 square",
+      // 제 3사분면
+      x: -50,
+      y: -50,
+    },
+  ];
   const refZoom = React.useRef<HTMLDivElement>(null);
   const start = React.useRef<any>({
     x: 0,
@@ -95,7 +160,17 @@ function App() {
 
   return (
     <div className="zoom_outer">
-      <div ref={refZoom} id="zoom"></div>
+      <div ref={refZoom} id="zoom">
+        <div id="coord">
+          {items.map((item) => (
+            <div
+              id={item.name}
+              className="item"
+              style={generateDivCoord(item)}
+            />
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

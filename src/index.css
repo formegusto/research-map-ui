@@ -12,6 +12,9 @@ html, body {
   overflow: hidden;
 }
 #zoom {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 750px;
   height: 750px;
   transform-origin: 0px 0px;
