@@ -41,7 +41,7 @@ function generateDivCoord(item: any) {
 }
 
 function App() {
-  const items = [
+  const [item, setItem] = React.useState<any>([
     {
       name: "1 square",
       // 1사분면
@@ -66,12 +66,13 @@ function App() {
       x: -50,
       y: -50,
     },
-  ];
+  ]);
   const refZoom = React.useRef<HTMLDivElement>(null);
   const start = React.useRef<any>({
     x: 0,
     y: 0,
   });
+  const [zooming, setZooming] = React.useState<boolean>(false);
   const panning = React.useRef<boolean>(false);
   const scale = React.useRef<number>(1);
   const pointX = React.useRef<number>(0);
@@ -80,6 +81,24 @@ function App() {
   const maxHeight = React.useRef<number>(750);
   const maxX = React.useRef<number>(0);
   const maxY = React.useRef<number>(0);
+
+  React.useEffect(() => {
+    if (zooming) {
+      if (refZoom && refZoom.current) {
+        const { width } = refZoom.current.getBoundingClientRect();
+
+        const _item = item.map((i: any) => ({
+          ...i,
+          x: (width * i.x) / 100,
+          y: (width * i.y) / 100,
+        }));
+
+        console.log(_item);
+        setItem(_item);
+        setZooming(false);
+      }
+    }
+  }, [zooming]);
 
   const setTransform = () => {
     if (refZoom && refZoom.current) {
@@ -128,6 +147,7 @@ function App() {
 
       refZoom.current.onwheel = (e) => {
         e.preventDefault();
+
         var xs = (e.clientX - pointX.current) / scale.current,
           ys = (e.clientY - pointY.current) / scale.current,
           delta = -e.deltaY;
@@ -154,6 +174,7 @@ function App() {
         pointY.current = e.clientY - ys * scale.current;
 
         setTransform();
+        setZooming(true);
       };
     }
   }, []);
@@ -162,13 +183,10 @@ function App() {
     <div className="zoom_outer">
       <div ref={refZoom} id="zoom">
         <div id="coord">
-          {items.map((item) => (
-            <div
-              id={item.name}
-              className="item"
-              style={generateDivCoord(item)}
-            />
-          ))}
+          {!zooming &&
+            item.map((i: any) => (
+              <div id={i.name} className="item" style={generateDivCoord(i)} />
+            ))}
         </div>
       </div>
     </div>
