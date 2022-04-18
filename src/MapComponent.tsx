@@ -1,6 +1,4 @@
 import React from "react";
-import "./App.css";
-import MapComponent from "./MapComponent";
 
 function generateDivCoord(mapWidth: number, item: any) {
   const { x, y } = item;
@@ -37,8 +35,12 @@ function generateDivCoord(mapWidth: number, item: any) {
 
   _x = (mapWidth * _x) / 100 - 24;
   _y = (mapWidth * _y) / 100 - 24;
+  const width = (48 * 750) / 2 / mapWidth;
+  const height = width;
 
   return {
+    width: width,
+    height: height,
     transform: "translateX(" + _x + "px) translateY(" + _y + "px)",
   };
 }
@@ -57,7 +59,7 @@ function createWheelStopListener(element: any, callback: any, timeout: any) {
   };
 }
 
-function App() {
+function MapComponent() {
   const [item, setItem] = React.useState<any>([
     {
       name: "1 square",
@@ -85,13 +87,9 @@ function App() {
     },
   ]);
   const refZoom = React.useRef<HTMLDivElement>(null);
-  const start = React.useRef<any>({
-    x: 0,
-    y: 0,
-  });
+  const [mapWidth, setMapWidth] = React.useState<number>(750 / 2);
   const [zooming, setZooming] = React.useState<boolean>(false);
-  const [mapWidth, setMapWidth] = React.useState<number>(0);
-  const panning = React.useRef<boolean>(false);
+  const [controlScale, setControlScale] = React.useState<number>(1);
   const scale = React.useRef<number>(1);
   const pointX = React.useRef<number>(0);
   const pointY = React.useRef<number>(0);
@@ -100,30 +98,18 @@ function App() {
   const maxX = React.useRef<number>(0);
   const maxY = React.useRef<number>(0);
 
-  // 1. 초기 위치 설정
   React.useEffect(() => {
     if (refZoom && refZoom.current) {
-      const { width } = refZoom.current.getBoundingClientRect();
-      setMapWidth(width / 2);
+      refZoom.current.ontransitionend = (e) => {
+        const _rect = refZoom.current?.getBoundingClientRect();
+        if (_rect) {
+          const { width } = _rect;
+
+          setMapWidth(width / 2);
+        }
+      };
     }
   }, []);
-
-  React.useEffect(() => {
-    if (refZoom && refZoom.current) {
-    }
-  }, [zooming]);
-
-  // React.useEffect(() => {
-  //   if (zooming) {
-  //     if (refZoom && refZoom.current) {
-  //       const { width } = refZoom.current.getBoundingClientRect();
-  //       setMapWidth(width / 2);
-
-  //       console.log(width);
-  //       setZooming(false);
-  //     }
-  //   }
-  // }, [zooming]);
 
   const setTransform = () => {
     if (refZoom && refZoom.current) {
@@ -159,7 +145,6 @@ function App() {
       createWheelStopListener(
         refZoom.current,
         function (e: React.WheelEvent) {
-          console.log(e);
           setZooming(true);
           var xs = (e.clientX - pointX.current) / scale.current,
             ys = (e.clientY - pointY.current) / scale.current,
@@ -186,82 +171,30 @@ function App() {
           pointY.current = e.clientY - ys * scale.current;
 
           setTransform();
-          setZooming(false);
+
+          setControlScale(nextScale);
         },
-        30
+        200
       );
     }
   }, []);
 
-  // React.useEffect(() => {
-  //   if (refZoom && refZoom.current) {
-  //     refZoom.current.onmousedown = (e) => {
-  //       e.preventDefault();
-
-  //       start.current = {
-  //         x: e.clientX - pointX.current,
-  //         y: e.clientY - pointY.current,
-  //       };
-  //       panning.current = true;
-  //     };
-
-  //     refZoom.current.onmouseup = (e) => {
-  //       panning.current = false;
-  //     };
-
-  //     // refZoom.current.onwheel = (e) => {
-  //     //   e.preventDefault();
-
-  //     //   var xs = (e.clientX - pointX.current) / scale.current,
-  //     //     ys = (e.clientY - pointY.current) / scale.current,
-  //     //     delta = -e.deltaY;
-
-  //     //   let nextScale = 0;
-  //     //   if (delta > 0) {
-  //     //     nextScale = scale.current * 1.2;
-  //     //   } else {
-  //     //     nextScale = scale.current / 1.2;
-  //     //   }
-  //     //   if (nextScale < 1) {
-  //     //     scale.current = 1;
-  //     //   } else {
-  //     //     if (nextScale > 3) {
-  //     //       scale.current = 3;
-  //     //     } else {
-  //     //       scale.current = nextScale;
-  //     //     }
-  //     //   }
-
-  //     //   maxX.current = maxWidth.current - maxWidth.current * scale.current;
-  //     //   maxY.current = maxHeight.current - maxHeight.current * scale.current;
-  //     //   pointX.current = e.clientX - xs * scale.current;
-  //     //   pointY.current = e.clientY - ys * scale.current;
-
-  //     //   setTransform();
-  //     //   setZooming(true);
-  //     // };
-  //   }
-  // }, []);
-
   return (
-    <>
-      {/* <div className="zoom_outer">
-        <div ref={refZoom} id="zoom">
-          <div id="coord">
-            {mapWidth !== 0 &&
-              item.map((i: any) => (
-                <div
-                  id={i.name}
-                  className="item"
-                  style={generateDivCoord(mapWidth, i)}
-                />
-              ))}
-          </div>
+    <div className="zoom_outer">
+      <div ref={refZoom} id="zoom">
+        <div id="coord">
+          {mapWidth !== 0 &&
+            item.map((i: any) => (
+              <div
+                id={i.name}
+                className="item"
+                style={generateDivCoord(mapWidth, i)}
+              />
+            ))}
         </div>
-      </div> */}
-      <MapComponent />
-    </>
+      </div>
+    </div>
   );
 }
 
-export default App;
+export default MapComponent;

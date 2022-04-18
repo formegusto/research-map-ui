@@ -21,4 +21,5 @@ html, body {
   transform: scale(1) translate(0px, 0px);
   cursor: grab;
   background: linear-gradient(#e66465, #9198e5);
+  transition: 0.1s;
 }
