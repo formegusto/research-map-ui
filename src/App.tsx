@@ -84,6 +84,32 @@ function App() {
       y: -50,
     },
   ]);
+  const [maxItems, setMaxItems] = React.useState<any>([
+    {
+      name: "1 square",
+      // 1사분면
+      x: 0,
+      y: 0,
+    },
+    {
+      name: "4 square",
+      // 제 4사분면
+      x: 0,
+      y: 0,
+    },
+    {
+      name: "2 square",
+      // 제 2사분면
+      x: 0,
+      y: 0,
+    },
+    {
+      name: "3 square",
+      // 제 3사분면
+      x: 0,
+      y: 0,
+    },
+  ]);
   const refZoom = React.useRef<HTMLDivElement>(null);
   const start = React.useRef<any>({
     x: 0,

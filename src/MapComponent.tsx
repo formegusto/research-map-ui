@@ -6,28 +6,28 @@ function generateDivCoord(mapWidth: number, item: any) {
   let _x = 0,
     _y = 0;
   // 1사분면
-  if (x > 0 && y > 0) {
+  if (x >= 0 && y >= 0) {
     // + +
     // left : + , top : -
     _x = x;
     _y = y * -1;
   }
   // 2사분면
-  else if (x < 0 && y > 0) {
+  else if (x <= 0 && y >= 0) {
     // - +
     // left : -, top : -
     _x = x;
     _y = y * -1;
   }
   // 3사분면
-  else if (x < 0 && y < 0) {
+  else if (x <= 0 && y <= 0) {
     // - -
     // left: -, top : +
     _x = x;
     _y = y * -1;
   }
   // 4사분면
-  else if (x > 0 && y < 0) {
+  else if (x >= 0 && y <= 0) {
     // + -
     // left: +, top: +
     _x = x;
@@ -48,33 +48,37 @@ function generateDivCoord(mapWidth: number, item: any) {
 }
 
 function generateCoordDiv(mapWidth: number, item: any) {
-  const { x, y } = item;
+  const { name, x, y } = item;
+  console.log(name, x, y);
   let _x = 0,
     _y = 0;
 
   // 2사분면
-  if (x > 0 && y > 0) {
+  if (x >= 0 && y >= 0) {
     _x = x * -1;
     _y = y;
   }
   // 1사분면
-  else if (x < 0 && y > 0) {
+  else if (x <= 0 && y >= 0) {
     _x = x * -1;
     _y = y;
   }
   // 4사분면
-  else if (x < 0 && y < 0) {
+  else if (x <= 0 && y <= 0) {
     _x = x * -1;
     _y = y;
   }
   // 3사분면
-  else if (x > 0 && y < 0) {
+  else if (x >= 0 && y <= 0) {
     _x = x * -1;
     _y = y;
   }
 
+  console.log(name, _x, _y);
+
   _x = (100 * _x) / mapWidth;
   _y = (100 * _y) / mapWidth;
+  console.log(name, _x, _y);
 
   return {
     x: _x,
@@ -123,6 +127,32 @@ function MapComponent() {
       y: -50,
     },
   ]);
+  const [maxItems, setMaxItems] = React.useState<any>([
+    {
+      name: "1 square",
+      // 1사분면
+      x: 0,
+      y: 0,
+    },
+    {
+      name: "4 square",
+      // 제 4사분면
+      x: 0,
+      y: 0,
+    },
+    {
+      name: "2 square",
+      // 제 2사분면
+      x: 0,
+      y: 0,
+    },
+    {
+      name: "3 square",
+      // 제 3사분면
+      x: 0,
+      y: 0,
+    },
+  ]);
   const refZoom = React.useRef<HTMLDivElement>(null);
   const refCoord = React.useRef<HTMLDivElement>(null);
   const refPoint = React.useRef<HTMLDivElement>(null);
@@ -140,6 +170,47 @@ function MapComponent() {
     x: 0,
     y: 0,
   });
+
+  React.useEffect(() => {
+    const nowWidth = 48 / scale.current;
+    const offset = 200 - nowWidth / 2;
+    const { x, y } = center;
+
+    const newMaxItems = [
+      {
+        name: "1 square",
+        // 1사분면
+        x: x,
+        y: y + offset + nowWidth / 2,
+      },
+      {
+        name: "4 square",
+        // 제 4사분면
+        x: x + offset + nowWidth / 2,
+        y: y,
+      },
+      {
+        name: "2 square",
+        // 제 2사분면
+        x: x - offset - nowWidth / 2,
+        y: y,
+      },
+      {
+        name: "3 square",
+        // 제 3사분면
+        x: x,
+        y: y - offset - nowWidth / 2,
+      },
+    ];
+
+    setMaxItems(newMaxItems);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [center]);
+
+  React.useEffect(() => {
+    // console.log(maxItems);
+  }, [maxItems]);
 
   React.useEffect(() => {
     if (refPoint && refPoint.current) {
@@ -281,12 +352,24 @@ function MapComponent() {
                 generateCoordDiv(mapWidth, center)
               )}
             ></div>
+            {mapWidth !== 0 &&
+              maxItems.map((i: any) => (
+                <div
+                  id={i.name}
+                  className="item"
+                  style={generateDivCoord(
+                    mapWidth,
+                    generateCoordDiv(mapWidth, i)
+                  )}
+                />
+              ))}
           </div>
         </div>
         <div id="point" ref={refPoint}></div>
       </div>
       <div>
         {JSON.stringify(generateCoordDiv(mapWidth, center), null, "\t")}
+        {JSON.stringify(maxItems)}
       </div>
     </>
   );
