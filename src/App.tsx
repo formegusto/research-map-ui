@@ -260,6 +260,9 @@ function App() {
         </div>
       </div> */}
       <MapComponent />
+      {/* <map>
+        <area shape="CIRCLE" coords="90,58.3" alt="CIRCLE" />
+      </map> */}
     </>
   );
 }

@@ -5,18 +5,33 @@
   overflow: hidden;
 }
 html, body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   margin: 0;
   padding: 0;
-  width: 750px;
-  height: 750px;
-  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+  overflow: visible;
 }
+
+.zoom_outer { 
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  width: 400px;
+  height: 400px;
+}
+
 #zoom {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 750px;
-  height: 750px;
+
+  width: 400px;
+  height: 400px;
   transform-origin: 0px 0px;
   transform: scale(1) translate(0px, 0px);
   cursor: grab;

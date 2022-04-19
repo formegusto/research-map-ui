@@ -2,8 +2,23 @@
   display: flex;
   position: relative;
   overflow: visible;
-  width: 48px;
-  height: 48px;
+  width: 0;
+  height: 0;
+
+  border: 1px solid #fff;
+}
+
+#point{
+  display: flex;
+  position: absolute;
+  overflow: visible;
+  z-index: 255;
+  width: 0px;
+  height: 0px;
+
+  border: 1px solid #000;
+
+  /* transform: translateX(-100px) translateY(-100px); */
 }
 
 .item  {
@@ -14,4 +29,6 @@
   border-radius: 48px;
 
   background-color: white;
+
+  transition: 0.35s;
 }
